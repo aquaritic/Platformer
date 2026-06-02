@@ -22,8 +22,10 @@ player.jumps = 2;
 let platforms = [];
 let spikes = [];
 let flag = null;
+let spikeSwitch = null;
 let currentLevel = 0;
 let tileSize = 40;
+let spikeDeath = true;
 const levels = [
     [
         "--------------------------------",
@@ -44,36 +46,53 @@ const levels = [
     ],
     [
         "----------------------#---------",
-        "----------------------#----##---",
-        "----------------------#-----#---",
-        "#------##########-----#-----#---",
+        "----------------#-----#----##---",
+        "----------------#-----#-----#---",
+        "-------##########-###-#-----#---",
         "-------#--------------##----#---",
         "-------#------#-------#-----#---",
         "------##---############-----#---",
         "-------#-------------#-----#----",
-        "-------#----------#-------#-----",
+        "-------#----------#--------#----",
         "#------#---------#----#####---##",
         "-------#---------#--------#-----",
         "------#######################---",
-        "--------------------------#-----",
-        "p-------------------------#--###",
-        "###########################--F--",
+        "--------------------------#---##",
+        "p-------------------------#----F",
+        "################################",
     ],
     [   "--------------------------------",
         "--------------------------------",
         "--------------------------------",
         "--------------------------------",
-        "-------------------------------f",
+        "-------------------------------F",
         "-----------------------------###",
+        "----------------------------#---",
         "--------------------------------",
-        "--------------------------------",
-        "-----------#----------#---------",
+        "-----------#---------#----------",
         "--------------------------------",
         "--------------------------------",
         "-------#------------------------",
         "--------------------------------",
         "p-------------------------------",
         "###sssssssssssssssssssssssssssss",
+    ],
+    [
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s-------------",
+        "------------------s--------#ssss",
+        "sssssssssssssssssss--------#----",
+        "p-----------d-----s--------#--F-",
+        "################################",
     ]
 ]
 
@@ -122,6 +141,17 @@ function draw() {
             spike.y,
             spike.width,
             spike.height
+        );
+    }
+
+    //toggle spike death
+    if(spikeSwitch){
+        ctx.fillStyle = "orange";
+        ctx.fillRect(
+            spikeSwitch.x,
+            spikeSwitch.y,
+            spikeSwitch.width,
+            spikeSwitch.height
         );
     }
 
@@ -198,7 +228,8 @@ function movement(){
             player.x < spike.x + spike.width &&
             player.x + player.width > spike.x &&
             player.y < spike.y + spike.height &&
-            player.y + player.height > spiky.y
+            player.y + player.height > spike.y &&
+            spikeDeath === true
         ){
             loadLevel(currentLevel);
         }
@@ -221,8 +252,29 @@ function movement(){
         }
     }
 
+    //switch collision
+    if(
+        spikeSwitch && 
+        player.x < spikeSwitch.x + spikeSwitch.width &&
+        player.x + player.width > spikeSwitch.x &&
+        player.y < spikeSwitch.y + spikeSwitch.height &&
+        player.y + player.height > spikeSwitch.y
+    ){
+        spikeDeath = false;
+        spikeSwitch = null;
+    }
+
+    //screen collision
     if(player.x + player.width > canvas.width){
         player.x = canvas.width - player.width;
+    }
+
+    if(player.x < 0){
+        player.x = 0;
+    }
+
+    if (player.y > canvas.height){
+        loadLevel(currentLevel);
     }
 }
 
@@ -235,6 +287,8 @@ function loadLevel(index){
     platforms = [];
     spikes = [];
     flag = null;
+    spikeSwitch = null;
+    spikeDeath = true;
 
     for(let row = 0; row < level.length; row++){
         for(let col = 0; col < level[row].length; col++){
@@ -257,6 +311,15 @@ function loadLevel(index){
                 width: tileSize,
                 height: tileSize
             });
+        }
+
+        if(tile === "d"){
+            spikeSwitch = {
+                x: col * tileSize,
+                y: row * tileSize,
+                width: tileSize,
+                height: tileSize
+            };
         }
 
         if(tile === "p"){
