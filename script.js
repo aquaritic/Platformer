@@ -194,7 +194,7 @@ function movement(){
         player.x = 0;
     }
 
-    if(player.x.player.width > canvas.width){
+    if(player.x + player.width > canvas.width){
         player.x = canvas.width - player.width;
     }
 }
