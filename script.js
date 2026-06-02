@@ -13,8 +13,7 @@ const player = {
 
 const keys = {};
 const gravity = .6;
-const ground = canvas.height - 100;
-const tileSize = 40;
+let ground = canvas.height - 100;
 
 player.vx = 0;
 player.vy = 0;
@@ -22,8 +21,10 @@ player.grounded = false;
 player.jumps = 2;
 
 let platforms = [];
+let spikes = [];
 let flag = null;
 let currentLevel = 0;
+let tileSize = 40;
 const levels = [
     [
         "--------------------------------",
@@ -33,7 +34,7 @@ const levels = [
         "---###--------------------------",
         "--------------#-----------------",
         "--------------------------------",
-        "------------------#-------------",
+        "--------------------------------",
         "--------------------------------",
         "--------------------------------",
         "----------------#---------------",
@@ -58,6 +59,22 @@ const levels = [
         "--------------------------#-----",
         "--------------------------#--###",
         "-p------------------------#--F--",
+    ],
+    [   "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "-------------------------------f",
+        "-----------------------------###",
+        "--------------------------------",
+        "--------------------------------",
+        "-----------#----------#---------",
+        "--------------------------------",
+        "--------------------------------",
+        "-------#------------------------",
+        "--------------------------------",
+        "p-------------------------------",
+        "###sssssssssssssssssssssssssssss",
     ]
 ]
 
@@ -74,6 +91,12 @@ window.addEventListener("keydown", (e) => {
         player.vy = -12;
         player.jumps--;
     } 
+});
+
+window.addEventListener("resize", () => {
+    canvas.width= window.innerWidth;
+    canvas.height = window.innerHeight;
+    loadLevel(currentLevel);
 });
 
 function draw() {
@@ -101,9 +124,20 @@ function draw() {
         );
     }
 
+    //spikes
+    ctx.fillStyle = "red";
+    for (const spike of spikes){
+        ctx.fillRect(
+            spike.x,
+            spike.y,
+            spike.width,
+            spike.height
+        );
+    }
+
     //flag
     if(flag){
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "darkgreen";
         ctx.fillRect(
             flag.x,
             flag.y,
@@ -168,6 +202,18 @@ function movement(){
         }
     }
 
+    //spike collision
+    for(const spike of spikes){
+        if (
+            player.x < spike.x + spike.width &&
+            player.x + player.width > spike.x &&
+            player.y < spike.y + spike.height &&
+            player.y + player.height > spiky.y
+        ){
+            loadLevel(currentLevel);
+        }
+    }
+
     //flag collision
     if(
         flag && 
@@ -208,9 +254,15 @@ function movement(){
 }
 
 function loadLevel(index){
-    platforms = [];
-    flag = null;
     const level = levels[index];
+    const cols = level[0].length;
+    const rows = level.length;
+    tileSize = Math.min(canvas.width / cols, canvas.height / rows);
+    ground = rows * tileSize;
+
+    platforms = [];
+    spikes = [];
+    flag = null;
 
     for(let row = 0; row < level.length; row++){
         for(let col = 0; col < level[row].length; col++){
@@ -226,9 +278,20 @@ function loadLevel(index){
             });
         }
 
+        if(tile === "s"){
+            spikes.push({
+                x: col * tileSize,
+                y: row * tileSize,
+                width: tileSize,
+                height: tileSize
+            });
+        }
+
         if(tile === "p"){
             player.x = col * tileSize;
             player.y = row * tileSize;
+            player.width = tileSize;
+            player.height = tileSize;
             player.vy = 0;
         }
 
