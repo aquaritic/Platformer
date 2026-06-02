@@ -27,19 +27,19 @@ let currentLevel = 0;
 const levels = [
     [
         "--------------------------------",
-        "---------F----------------------",
-        "---------###--------------------",
-        "-----------------###------------",
-        "--------------------------###---",
-        "-p------------------------------",
-        "################################",
+        "-------------------------------F",
+        "-----------------------#------##",
+        "---------------------##---------",
         "--------------------------------",
+        "--------------------#-----------",
+        "---------------#----------------",
+        "--------------------#-----------",
         "--------------------------------",
-        "--------------------------------",
-        "--------------------------------",
-        "--------------------------------",
-        "--------------------------------",
-        "--------------------------------",
+        "------------------------#-------",
+        "----------------#---------------",
+        "-------------#------------------",
+        "----------#---------------------",
+        "p-------------------------------",
         "################################",
     ],
     [
@@ -82,15 +82,6 @@ function draw() {
         100
     );
 
-    // player
-    ctx.fillStyle = "white"
-    ctx.fillRect(
-        player.x,
-        player.y,
-        player.width,
-        player.height
-    );
-
     //platforms
     ctx.fillStyle = "black";
     for (const platform of platforms){
@@ -112,6 +103,15 @@ function draw() {
             flag.height
         );
     }
+
+    // player
+    ctx.fillStyle = "white"
+    ctx.fillRect(
+        player.x,
+        player.y,
+        player.width,
+        player.height
+    );
 }
 
 function movement(){
@@ -136,11 +136,26 @@ function movement(){
             player.y < platform.y + platform.height &&
             player.y + player.height > platform.y
         ){
-            if(player.vy > 0 && player.y + player.height - player.vy <= platform.y ){
-                player.grounded = true;
-                player.jumps = 2;
+            const leftCollision = player.x + player.width - platform.x;
+            const rightCollision = platform.x + platform.width - player.x;
+            const topCollision = player.y + player.height - platform.y;
+            const bottomCollision = platform.y + platform.height - player.y;
+            const collision = Math.min(leftCollision, rightCollision, topCollision, bottomCollision);
+
+            if(collision === topCollision){
                 player.y = platform.y - player.height;
                 player.vy = 0;
+                player.grounded = true;
+                player.jumps = 2;
+            } else if (collision === bottomCollision){
+                player.y = platform.y + platform.height;
+                if(player.vy < 0){
+                    player.vy = 0;
+                }
+            } else if (collision = leftCollision){
+                player.x = platform.x - player.width;
+            } else if (collision = rightCollision){
+                player.x = platform.x + platform.width;
             }
         }
     }
@@ -172,6 +187,15 @@ function movement(){
 
     if (player.grounded){
         player.jumps = 2;
+    }
+
+    //screen collision
+    if(player.x < 0){
+        player.x = 0;
+    }
+
+    if(player.x.player.width > canvas.width){
+        player.x = canvas.width - player.width;
     }
 }
 
