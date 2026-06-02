@@ -32,7 +32,15 @@ const levels = [
         "-----------------###------------",
         "--------------------------###---",
         "-p------------------------------",
-        "################################"
+        "################################",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "--------------------------------",
+        "################################",
     ],
     [
         "##########----------------------",
@@ -61,6 +69,10 @@ window.addEventListener("keydown", (e) => {
 });
 
 function draw() {
+    //background
+    ctx.fillStyle = "#00b7ff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     //ground
     ctx.fillStyle = "green";
     ctx.fillRect(
@@ -71,7 +83,6 @@ function draw() {
     );
 
     // player
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white"
     ctx.fillRect(
         player.x,
@@ -128,6 +139,8 @@ function movement(){
             if(player.vy > 0 && player.y + player.height - player.vy <= platform.y ){
                 player.grounded = true;
                 player.jumps = 2;
+                player.y = platform.y - player.height;
+                player.vy = 0;
             }
         }
     }
