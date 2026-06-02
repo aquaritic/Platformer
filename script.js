@@ -1,0 +1,210 @@
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const player = {
+    x: 100,
+    y: 100,
+    width: 40,
+    height: 40
+};
+
+const keys = {};
+const gravity = .6;
+const ground = canvas.height - 100;
+const tileSize = 40;
+
+player.vx = 0;
+player.vy = 0;
+player.grounded = false;
+player.jumps = 2;
+
+let platforms = [];
+let flag = null;
+let currentLevel = 0;
+const levels = [
+    [
+        "--------------------------------",
+        "---------F----------------------",
+        "---------###--------------------",
+        "-----------------###------------",
+        "--------------------------###---",
+        "-p------------------------------",
+        "################################"
+    ],
+    [
+        "##########----------------------",
+        "#---------------------------F---",
+        "#-------###----#------#-----#---",
+        "##------#-----------------------",
+        "#------##-----------------------",
+        "#--p----#-----------------------",
+        "################################"
+    ]
+]
+
+window.addEventListener("keydown", (e) => {
+    keys[e.key] = true;
+});
+
+window.addEventListener("keyup", (e) => {
+    keys[e.key] = false;
+});
+
+window.addEventListener("keydown", (e) => {
+    if ((e.key === "w" || e.key === "ArrowUp") && player.jumps > 0){
+        player.vy = -12;
+        player.jumps--;
+    } 
+});
+
+function draw() {
+    //ground
+    ctx.fillStyle = "green";
+    ctx.fillRect(
+        0,
+        ground,
+        canvas.width,
+        100
+    );
+
+    // player
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white"
+    ctx.fillRect(
+        player.x,
+        player.y,
+        player.width,
+        player.height
+    );
+
+    //platforms
+    ctx.fillStyle = "black";
+    for (const platform of platforms){
+        ctx.fillRect(
+            platform.x,
+            platform.y,
+            platform.width,
+            platform.height
+        );
+    }
+
+    //flag
+    if(flag){
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+            flag.x,
+            flag.y,
+            flag.width,
+            flag.height
+        );
+    }
+}
+
+function movement(){
+    player.grounded = false;
+
+    if (keys["a"] || keys["ArrowLeft"]) {
+        player.x -= 5;
+    }
+
+    if (keys["d"] || keys["ArrowRight"]) {
+        player.x += 5;
+    }
+
+    player.vy += gravity;
+    player.y += player.vy;
+
+    //platform collision
+    for(const platform of platforms){
+        if(
+            player.x < platform.x + platform.width &&
+            player.x + player.width > platform.x &&
+            player.y < platform.y + platform.height &&
+            player.y + player.height > platform.y
+        ){
+            if(player.vy > 0 && player.y + player.height - player.vy <= platform.y ){
+                player.grounded = true;
+                player.jumps = 2;
+            }
+        }
+    }
+
+    //flag collision
+    if(
+        flag && 
+        player.x < flag.x + flag.width &&
+        player.x + player.width > flag.x &&
+        player.y < flag.y + flag.height &&
+        player.y + player.height > flag.y
+    ){
+        currentLevel++;
+        if(currentLevel >= levels.length){
+            console.log("Game Completed")
+        } else {
+            console.log("Beat Level")
+            loadLevel(currentLevel);
+        }
+    }
+
+    //ground collision
+    if(player.y + player.height > ground){
+        player.y = ground - player.height;
+        player.vy = 0;
+        player.grounded = true;
+        player.jumps = 2;
+    }
+
+    if (player.grounded){
+        player.jumps = 2;
+    }
+}
+
+function loadLevel(index){
+    platforms = [];
+    flag = null;
+    const level = levels[index];
+
+    for(let row = 0; row < level.length; row++){
+        for(let col = 0; col < level[row].length; col++){
+
+        const tile = level[row][col];
+
+        if(tile === "#"){
+            platforms.push({
+                x: col * tileSize,
+                y: row * tileSize,
+                width: tileSize,
+                height: tileSize
+            });
+        }
+
+        if(tile === "p"){
+            player.x = col * tileSize;
+            player.y = row * tileSize;
+            player.vy = 0;
+        }
+
+        if(tile === "F"){
+            flag = {
+                x: col * tileSize,
+                y: row * tileSize,
+                width: tileSize,
+                height: tileSize
+                };
+            }
+        }
+    }
+    player.grounded = false;
+}
+
+function animation(){
+    movement();
+    draw();
+    requestAnimationFrame(animation);
+}
+
+loadLevel(currentLevel);
+animation();
