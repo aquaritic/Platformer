@@ -13,7 +13,6 @@ const player = {
 
 const keys = {};
 const gravity = .6;
-let ground = canvas.height - 100;
 
 player.vx = 0;
 player.vy = 0;
@@ -40,8 +39,8 @@ const levels = [
         "----------------#---------------",
         "--------------------------------",
         "--------------------------------",
-        "--------------------------------",
-        "-p------------------------------",
+        "p-------------------------------",
+        "################################",
     ],
     [
         "----------------------#---------",
@@ -57,8 +56,8 @@ const levels = [
         "-------#---------#--------#-----",
         "------#######################---",
         "--------------------------#-----",
-        "--------------------------#--###",
-        "-p------------------------#--F--",
+        "p-------------------------#--###",
+        "###########################--F--",
     ],
     [   "--------------------------------",
         "--------------------------------",
@@ -104,17 +103,8 @@ function draw() {
     ctx.fillStyle = "#00b7ff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    //ground
-    ctx.fillStyle = "green";
-    ctx.fillRect(
-        0,
-        ground,
-        canvas.width,
-        100
-    );
-
     //platforms
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "magenta";
     for (const platform of platforms){
         ctx.fillRect(
             platform.x,
@@ -231,23 +221,6 @@ function movement(){
         }
     }
 
-    //ground collision
-    if(player.y + player.height > ground){
-        player.y = ground - player.height;
-        player.vy = 0;
-        player.grounded = true;
-        player.jumps = 2;
-    }
-
-    if (player.grounded){
-        player.jumps = 2;
-    }
-
-    //screen collision
-    if(player.x < 0){
-        player.x = 0;
-    }
-
     if(player.x + player.width > canvas.width){
         player.x = canvas.width - player.width;
     }
@@ -258,7 +231,6 @@ function loadLevel(index){
     const cols = level[0].length;
     const rows = level.length;
     tileSize = Math.min(canvas.width / cols, canvas.height / rows);
-    ground = rows * tileSize;
 
     platforms = [];
     spikes = [];
