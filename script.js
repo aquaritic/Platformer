@@ -372,7 +372,7 @@ function loadLevel(index){
     const scaleX = canvas.width/cols;
     const scaleY = canvas.height/rows;
 
-    gravity = scaleY * .05;
+    gravity = scaleY * .02;
     platforms = [];
     spikes = [];
     flag = null;
@@ -445,8 +445,8 @@ function loadLevel(index){
         }
     }
     player.grounded = false;
-    player.speed = scaleX * .3;
-    player.jumpStrength = scaleY * 1.5;
+    player.speed = scaleX * .1;
+    player.jumpStrength = scaleY * .8;
 }
 
 function animation(){
