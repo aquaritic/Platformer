@@ -1,6 +1,17 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+const platformImg = new Image();
+platformImg.src = "platform.png";
+const spikeImg = new Image();
+spikeImg.src = "spike.png";
+const invertSpikeImg = new Image();
+invertSpikeImg.src = "invertSpike.png";
+const gravImg = new Image();
+gravImg.src = "grav.png";
+const flagImg = new Image();
+flagImg.src = "flag.png";
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -205,9 +216,9 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     //platforms
-    ctx.fillStyle = "magenta";
     for (const platform of platforms){
-        ctx.fillRect(
+        ctx.drawImage(
+            platformImg,
             platform.x,
             platform.y,
             platform.width,
@@ -216,9 +227,9 @@ function draw() {
     }
 
     //spikes
-    ctx.fillStyle = "red";
     for (const spike of spikes){
-        ctx.fillRect(
+        ctx.drawImage(
+            spikeImg,
             spike.x,
             spike.y,
             spike.width,
@@ -228,8 +239,8 @@ function draw() {
 
     //spike switch
     if(spikeSwitch){
-        ctx.fillStyle = "orange";
-        ctx.fillRect(
+        ctx.drawImage(
+            invertSpikeImg,
             spikeSwitch.x,
             spikeSwitch.y,
             spikeSwitch.width,
@@ -239,8 +250,8 @@ function draw() {
 
     //gravity switch
     if(gravitySwitch){
-        ctx.fillStyle = "black";
-        ctx.fillRect(
+        ctx.drawImage(
+            gravImg,
             gravitySwitch.x,
             gravitySwitch.y,
             gravitySwitch.width,
@@ -250,8 +261,8 @@ function draw() {
 
     //flag
     if(flag){
-        ctx.fillStyle = "darkgreen";
-        ctx.fillRect(
+        ctx.drawImage(
+            flagImg,
             flag.x,
             flag.y,
             flag.width,
