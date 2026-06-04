@@ -109,7 +109,7 @@ const levels = [
         "-----s---------------------------",
         "-----s---------------------------",
         "-------------------------#-------",
-        "---------------------------------",
+        "-p-------------------------------",
         "#################################",
     ],
     [
@@ -260,16 +260,16 @@ function movement(){
             const bottomCollision = platform.y + platform.height - player.y;
             const collision = Math.min(leftCollision, rightCollision, topCollision, bottomCollision);
 
-            if(collision === topCollision){
+            if(collision === topCollision && (gravity !== 0 || player.vy > 0)){
                 player.y = platform.y - player.height;
                 if(gravity !== 0){
                     player.vy = 0;
                     player.grounded = true;
                     player.jumps = 2;
                 }
-            } else if (collision === bottomCollision){
+            } else if (collision === bottomCollision && (gravity !== 0 || player.vy < 0)){
                 player.y = platform.y + platform.height;
-                if(player.vy < 0){
+                if(gravity !== 0 && player.vy < 0){
                     player.vy = 0;
                 }
             } else if (collision === leftCollision){
