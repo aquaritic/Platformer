@@ -157,7 +157,7 @@ window.addEventListener("keyup", (e) => {
 
 window.addEventListener("keydown", (e) => {
     if ((e.key === "w" || e.key === "ArrowUp") && player.jumps > 0 && gravity !== 0){
-        player.vy = -12;
+        player.vy = -player.jumpStrength;
         player.jumps--;
     } 
 });
@@ -242,18 +242,18 @@ function movement(){
     player.grounded = false;
 
     if (keys["a"] || keys["ArrowLeft"]) {
-        player.x -= 5;
+        player.x -= player.speed;
     }
 
     if (keys["d"] || keys["ArrowRight"]) {
-        player.x += 5;
+        player.x += player.speed;
     }
 
     if (gravity === 0){
         if(keys["w"] || keys["ArrowUp"]){
-            player.vy = -5;
+            player.vy = -player.speed;
         } else if (keys["s"] || keys["ArrowDown"]){
-            player.vy = 5;
+            player.vy = player.speed;
         } else {
             player.vy = 0;
         }
@@ -369,9 +369,10 @@ function loadLevel(index){
     const level = levels[index];
     const cols = level[0].length;
     const rows = level.length;
-    tileSize = Math.min(canvas.width / cols, canvas.height / rows);
+    const scaleX = canvas.width/cols;
+    const scaleY = canvas.height/rows;
 
-    gravity = .6;
+    gravity = scaleY * .05;
     platforms = [];
     spikes = [];
     flag = null;
@@ -386,64 +387,66 @@ function loadLevel(index){
         //platform
         if(tile === "#"){
             platforms.push({
-                x: col * tileSize,
-                y: row * tileSize,
-                width: tileSize,
-                height: tileSize
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
             });
         }
 
         //spike
         if(tile === "s"){
             spikes.push({
-                x: col * tileSize,
-                y: row * tileSize,
-                width: tileSize,
-                height: tileSize
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
             });
         }
 
         //spike switch
         if(tile === "d"){
             spikeSwitch = {
-                x: col * tileSize,
-                y: row * tileSize,
-                width: tileSize,
-                height: tileSize
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
             };
         }
 
         //gravity switch
         if(tile === "g"){
             gravitySwitch = {
-                x: col * tileSize,
-                y: row * tileSize,
-                width: tileSize,
-                height: tileSize
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
             };
         }
 
         //player
         if(tile === "p"){
-            player.x = col * tileSize;
-            player.y = row * tileSize;
-            player.width = tileSize;
-            player.height = tileSize;
+            player.x = col * scaleX;
+            player.y = row * scaleY;
+            player.width = scaleX;
+            player.height = scaleY;
             player.vy = 0;
         }
 
         //flag
         if(tile === "F"){
             flag = {
-                x: col * tileSize,
-                y: row * tileSize,
-                width: tileSize,
-                height: tileSize
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
                 };
             }
         }
     }
     player.grounded = false;
+    player.speed = scaleX * .3;
+    player.jumpStrength = scaleY * 1.5;
 }
 
 function animation(){
