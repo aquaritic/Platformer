@@ -446,7 +446,7 @@ function loadLevel(index){
     }
     player.grounded = false;
     player.speed = scaleX * .1;
-    player.jumpStrength = scaleY * .8;
+    player.jumpStrength = scaleY * .4;
 }
 
 function animation(){
