@@ -6,14 +6,16 @@
     <body>
         <a href="index.html"><button>BACK</button></a>
         <h1>OBJECTS</h1>
-        <div id = "display">
-            <img id = "tile" src = ""/>
-            <p id = "name"></p>
-            <p id = "desc"></p>
-        </div>
 
-        <button onclick="navigate(-1)">←</button>
-        <button onclick="navigate(1)">→</button>
+        <div style="display:flex; align-items:center; justify-content:center; gap: 20px;">
+            <button onclick="navigate(-1)">←</button>
+            <div id ="display">
+                <img id="tile" src=""/>
+                <p id="name"></p>
+                <p id="desc"></p>
+            </div>
+            <button onclick="navigate(-1)">→</button>
+        </div>
 
         <script>
             const objects = [
@@ -34,7 +36,7 @@
             function navigate(dir){
                 const display = document.getElementById("display");
                 display.style.opacity = 0;
-                setTimeut(() => {
+                setTimeout(() => {
                     current = (current + dir + objects.length) % objects.length;
                     show(current);
                     display.style.opacity = 1;
