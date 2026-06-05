@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>MonoPlat Objects</title>
+        <link rel="stylesheet" href = "style.css">
+    </head>
+    <body>
+        <a href="index.html"><button>BACK</button></a>
+        <h1>OBJECTS</h1>
+        <div id = "display">
+            <img id = "tile" src = ""/>
+            <p id = "name"></p>
+            <p id = "desc"></p>
+        </div>
+
+        <button onclick="navigate(-1)">←</button>
+        <button onclick="navigate(1)">→</button>
+
+        <script>
+            const objects = [
+                {name: "Platform", img: "platform.png", desc: "A regular tile that you can walk on, nothing special"},
+                {name: "Magma", img: "spike.png", desc: "Decimates you as soon as you touch it"},
+                {name: "Flag", img: "flag.png", desc: "Advances you to the next level"},
+                {name: "Anti-Gravity", img: "grav.png", desc: "Eliminates gravity for that level"},
+                {name: "Coolant", img: "invertSpike.png", desc: "Makes you immune to magma for that level"},
+            ];
+
+            let current = 0;
+
+            function show(index){
+                document.getElementById("tile").src = objects[index].img;
+                document.getElementById("name").textContent = objects[index].name;
+                document.getElementById("desc").textContent = objects[index].desc;
+            }
+            function navigate(dir){
+                const display = document.getElementById("display");
+                display.style.opacity = 0;
+                setTimeut(() => {
+                    current = (current + dir + objects.length) % objects.length;
+                    show(current);
+                    display.style.opacity = 1;
+                }, 300);
+            }
+            show(0);
+        </script>
+
+    </body>
+</html>
