@@ -11,6 +11,10 @@ const gravImg = new Image();
 gravImg.src = "grav.png";
 const flagImg = new Image();
 flagImg.src = "flag.png";
+const dashImg = new Image();
+dashImg.src = "dash.png";
+const backgroundImg = new Image();
+backgroundImg.src = "background.png";
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -29,15 +33,24 @@ player.vx = 0;
 player.vy = 0;
 player.grounded = false;
 player.jumps = 2;
+player.jumpStrength = 5;
+player.speed = 5;
+player.dashing = false;
+player.dashTimer = 0;
+player.dashDirection = 1;
+player.dashMode = false;
 
 let platforms = [];
 let spikes = [];
+let backgrounds = [];
 let flag = null;
 let gravitySwitch = null;
 let spikeSwitch = null;
+let dashSwitch = null;
 let currentLevel = 0;
 let tileSize = 40;
 let spikeDeath = true;
+
 const levels = [
     [
         "--------------------------------#",
@@ -186,6 +199,26 @@ const levels = [
         "#-##----#sss##-------###",
         "#--######s-s############",
         "#########sFs############"
+    ],
+    [
+        "----------------------------------------",
+        "----------------------------------------",
+        "-----------F----------------------------",
+        "-----------#----------------------------",
+        "----------------------------------------",
+        "-----##---------------------------------",
+        "----------------------------------------",
+        "---------------------##-----------------",
+        "----------------------------------------",
+        "-------------------------------------###",
+        "-------b--------------------------------",
+        "-----###-----------------###------------",
+        "----------------------------------------",
+        "--p-------------------------------------",
+        "-###------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "ssssssssssssssssssssssssssssssssssssssss",
     ]
 ]
 
@@ -212,8 +245,15 @@ window.addEventListener("resize", () => {
 
 function draw() {
     //background
-    ctx.fillStyle = "#00b7ff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for(const background of backgrounds){
+        ctx.drawImage(
+            backgroundImg,
+            background.x,
+            background.y,
+            background.width,
+            background.height
+        );
+    }
 
     //platforms
     for (const platform of platforms){
@@ -259,6 +299,17 @@ function draw() {
         )
     }
 
+    //dash switch
+    if(dashSwitch){
+        ctx.drawImage(
+            dashImg,
+            dashSwitch.x,
+            dashSwitch.y,
+            dashSwitch.width,
+            dashSwitch.height
+        )
+    }
+
     //flag
     if(flag){
         ctx.drawImage(
@@ -289,6 +340,19 @@ function movement(){
 
     if (keys["d"] || keys["ArrowRight"]) {
         player.x += player.speed;
+    }
+
+    if(keys[" "] && !player.dashing && player.dashMode){
+        player.dashing = true;
+        player.dashTimer = 10;
+        player.dashDirection = (keys["d"] || keys["ArrowRight"]) ? 1 : -1;
+    }
+
+    if (player.dashTimer > 0){
+        player.x += player.dashDirection * player.speed * 3;
+        player.dashTimer--;
+    } else {
+        player.dashing = false;
     }
 
     if (gravity === 0){
@@ -393,6 +457,18 @@ function movement(){
             gravitySwitch = null;
         }
 
+    //dash switch collision
+    if(
+        dashSwitch &&
+        player.x < dashSwitch.x + dashSwitch.width &&
+        player.x + player.width > dashSwitch.x &&
+        player.y < dashSwitch.y + dashSwitch.height &&
+        player.y + player.height > dashSwitch.y 
+    ){
+        player.dashMode = true;
+        dashSwitch = null;
+    }
+
     //screen collision
     if(player.x + player.width > canvas.width){
         player.x = canvas.width - player.width;
@@ -417,14 +493,27 @@ function loadLevel(index){
     gravity = .6 * (scaleY / (canvas.height/15));
     platforms = [];
     spikes = [];
+    backgrounds = [];
     flag = null;
     spikeSwitch = null;
     gravitySwitch = null;
+    dashSwitch = null;
+    player.dashMode = false;
 
     for(let row = 0; row < level.length; row++){
         for(let col = 0; col < level[row].length; col++){
 
         const tile = level[row][col];
+
+        //background
+        if(tile === "-"){
+            backgrounds.push({
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
+            });
+        }
 
         //platform
         if(tile === "#"){
@@ -459,6 +548,16 @@ function loadLevel(index){
         //gravity switch
         if(tile === "g"){
             gravitySwitch = {
+                x: col * scaleX,
+                y: row * scaleY,
+                width: scaleX,
+                height: scaleY
+            };
+        }
+
+        //dash switch
+        if(tile === "b"){
+            dashSwitch = {
                 x: col * scaleX,
                 y: row * scaleY,
                 width: scaleX,
