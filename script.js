@@ -614,7 +614,7 @@ function loadLevel(index){
     }
     player.grounded = false;
     if (index === 9){
-        player.speed = 5 * (scaleX / (canvas.height/20));
+        player.speed = 15
     } else {
         player.speed = 5 * (scaleX / (canvas.height/15));
     }
