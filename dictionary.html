@@ -14,7 +14,7 @@
                 <p id="name"></p>
                 <p id="desc"></p>
             </div>
-            <button onclick="navigate(-1)">→</button>
+            <button onclick="navigate(1)">→</button>
         </div>
 
         <script>
@@ -24,6 +24,7 @@
                 {name: "Flag", img: "flag.png", desc: "Advances you to the next level"},
                 {name: "Anti-Gravity", img: "grav.png", desc: "Eliminates gravity for that level"},
                 {name: "Coolant", img: "invertSpike.png", desc: "Makes you immune to magma for that level"},
+                {name: "Dash Core", img: "dash.png", desc: "Allows you to dash in the player's movement direction"},
             ];
 
             let current = 0;
