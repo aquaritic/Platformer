@@ -613,7 +613,11 @@ function loadLevel(index){
         }
     }
     player.grounded = false;
-    player.speed = 5 * (scaleX / (canvas.height/15));
+    if (index === 9){
+        player.speed = 5 * (scaleX / (canvas.height/20));
+    } else {
+        player.speed = 5 * (scaleX / (canvas.height/15));
+    }
     player.jumpStrength = 12 * (scaleY / (canvas.height/15));
 }
 
