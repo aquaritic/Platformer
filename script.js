@@ -452,6 +452,7 @@ function movement(){
     ){
         currentLevel++;
         if(currentLevel >= levels.length){
+            flag = null;
             window.location.href = "victory.html";
         } else {
             console.log("Beat Level")
