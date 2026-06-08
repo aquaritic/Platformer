@@ -244,16 +244,9 @@ const levels = [
         "ssFss",
         "ss-ss",
         "ss-ss",
-        "ss-ss",
-        "pg-ss",
+        "p---g",
+        "#####",
     ],
-    [
-        "ss-ss",
-        "ss--s",
-        "ss--F",
-        "ssdss",
-        "sspss",
-    ]
 ]
 
 window.addEventListener("keydown", (e) => {
